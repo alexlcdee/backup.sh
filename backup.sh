@@ -7,7 +7,7 @@ _SERVER=$1
 # Here list of configurable options that might be set in conf/$_SERVER.sh
 SSH_ALIAS=""
 REMOTE_DIR=""
-EXCLUDE="backup"
+EXCLUDE="*backup*"
 BACKUP_MYSQL=1
 MYSQL_USER="root"
 MYSQL_PASSWORD=""
