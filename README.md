@@ -8,7 +8,6 @@ For backup create `conf/${SERVER_NAME}.sh` file with parameters for server. For 
 SSH_ALIAS="root@host"
 
 REMOTE_DIR="/path/to/files/for/backup/"
-EXCLUDE="rsync/exclude"
 
 MYSQL_USER="user"
 MYSQL_PASSWORD="password"
@@ -32,13 +31,25 @@ and you will be prompted for server number from list.
 
 `REMOTE_DIR` — path to files for backup. E.g.: `"/var/www"`
 
-`EXCLUDE` — exlude pattern for rsync. Defaults to `"*backup*"`
+`RSYNC_OPTS` — options for rsync. Defalts to `" -az "`
 
 `BACKUP_MYSQL` — whether or not backup MySQL databases. `BACKUP_MYSQL=1` to backup. Defaults to `1`
 
 `MYSQL_USER` — MySQL server username. Defaults to `"root"`
 
 `MYSQL_PASSWORD` — MySQL server user password. Defaults to empty string
+
+## Available options
+
+```bash
+ -a, --all                  Backup sites from all configs in config directory
+ -c, --conf-dir=DIR         Directory with server configs
+ -b, --backup-dir=DIR       Directory to store backups
+ -s, --ssh-command=FILE     SSH Client binary path
+ -r, --rsync-command=FILE   Rsync binary path
+ -v, --verbose              Verbose output
+ -h, --help                 Print this help
+```
 
 ## Authentication on server
 Basically, you will be prompted for shh password several times (based on ypur configuration). For passwordless authentication SSH keys for server without passphrases.
