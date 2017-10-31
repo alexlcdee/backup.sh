@@ -169,58 +169,57 @@ do
 	--all)
 		_BACKUP_ALL=1
 		shift
-		;;
+	;;
 	--conf-dir=*)
 		_CONF_DIR="${__option#*=}"
 		shift # past argument=value
-		;;
+	;;
 	--backup-dir=*)
 		_BACKUP_DIR="${__option#*=}"
 		shift # past argument=value
-		;;
+	;;
 	--ssh-command=*)
 		_SSH_COMMAND="${__option#*=}"
 		shift # past argument=value
-		;;
+	;;
 	--rsync-command=*)
 		_RSYNC_COMMAND="${__option#*=}"
 		shift # past argument=value
-		;;
+	;;
 	--help|-h)
 		print_help $0
 		shift
-		;;
+	;;
 	*)
-		
-		;;
+	;;
 	esac
 done
 
 OPTIND=1
 while getopts "h?v?ac:b:s:r:" opt; do
-    case "$opt" in
+	case "$opt" in
 	a)
 		_BACKUP_ALL=1
 		;;
-    c)  
+	c)  
 		_CONF_DIR=$OPTARG
         ;;
-    b)  
+	b)  
 		_BACKUP_DIR=$OPTARG
         ;;
-    s)  
+	s)  
 		_SSH_COMMAND=$OPTARG
         ;;
-    r)  
+	r)  
 		_RSYNC_COMMAND=$OPTARG
-        ;;
-    h)
+		;;
+	h)
 		print_help $0
-        ;;
+		;;
 	v)
 		_VERBOSE="-v"
 		;;
-    esac
+	esac
 done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
