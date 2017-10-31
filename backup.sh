@@ -51,13 +51,39 @@ __backup_mysql() {
 	then
 		echo "Backup Databases"
 	fi
-	$_SSH_COMMAND $SSH_ALIAS 'bash -s' < $_SCRIPT_DIR/mysqldump.sh /tmp/db $MYSQL_USER $MYSQL_PASSWORD
+
+	local __TMP_PATH="/tmp/db"
+
+	$_SSH_COMMAND $SSH_ALIAS 'bash -s' << ENDSCRIPT
+mkdir -p $__TMP_PATH
+
+DATABASES=\$(mysql -u ${MYSQL_USER} --batch --skip-column-names -p${MYSQL_PASSWORD} -e "show databases")
+
+for __DB in \$DATABASES; do
+	if [ \$__DB == "information_schema" ] || [ \$__DB == "mysql" ] || [ \$__DB == "performance_schema" ]
+	then
+		continue
+	fi
+
+	if [ "-v" == "${_VERBOSE}" ]
+	then
+		echo "Dump database: \$__DB"
+	fi
+
+    mysqldump -u ${MYSQL_USER} -p${MYSQL_PASSWORD} \$__DB | gzip --best > $__TMP_PATH/\$__DB.sql.gz
+done
+
+if [ "-v" == "${_VERBOSE}" ]
+then
+	echo "Dumps created"
+fi
+ENDSCRIPT
 
 	if [ "-v" == "$_VERBOSE" ]
 	then
 		echo "Download databases"
 	fi
-	$_RSYNC_COMMAND -az $_VERBOSE $SSH_ALIAS:/tmp/db/ $__BACKUP_DIR/db
+	$_RSYNC_COMMAND -az $_VERBOSE $SSH_ALIAS:$__TMP_PATH/ $__BACKUP_DIR/db
 
 	
 	if [ "-v" == "$_VERBOSE" ]
