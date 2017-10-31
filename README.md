@@ -52,7 +52,7 @@ and you will be prompted for server number from list.
 ```
 
 ## Authentication on server
-Basically, you will be prompted for shh password several times (based on ypur configuration). For passwordless authentication SSH keys for server without passphrases.
+Basically, you will be prompted for shh password several times (based on your configuration). For passwordless authentication use SSH keys for server without passphrases.
 
 ## Requirements
 - rsync  version >=3.1.1
