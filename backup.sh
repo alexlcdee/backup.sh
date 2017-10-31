@@ -7,7 +7,7 @@ _SSH_COMMAND="/usr/bin/env ssh"
 _RSYNC_COMMAND="/usr/bin/env rsync"
 _BACKUP_ALL=0
 _VERBOSE=""
-_OUTPUT_REDIRECTION=" > /dev/null 2>&1"
+_OUTPUT_REDIRECTION=" &>/dev/null 2>&1"
 
 # Load config file by server name
 # @param server name
@@ -100,24 +100,21 @@ fi
 ENDSCRIPT
 )
 
-    $_SSH_COMMAND $SSH_ALIAS 'bash -c' "'${__MYSQLDUMP}'" \
-        $_OUTPUT_REDIRECTION
+    ${_SSH_COMMAND} ${SSH_ALIAS} 'bash -c' "'${__MYSQLDUMP}'"
 
     if [ "-v" == "$_VERBOSE" ]
     then
         echo "Download databases"
     fi
-    $_RSYNC_COMMAND -az $_VERBOSE \
-        $SSH_ALIAS:$__TMP_PATH/ \
-        $__BACKUP_DIR/db \
-        $_OUTPUT_REDIRECTION
+
+    ${_RSYNC_COMMAND} "-az" ${_VERBOSE} "${SSH_ALIAS}:${__TMP_PATH}/" "${__BACKUP_DIR}/db"
 
 
     if [ "-v" == "$_VERBOSE" ]
     then
         echo "Remove dumps from server"
     fi
-    $_SSH_COMMAND $SSH_ALIAS 'rm -rf /tmp/db' $_OUTPUT_REDIRECTION
+    ${_SSH_COMMAND} ${SSH_ALIAS} 'rm -rf /tmp/db'
 }
 
 # Backup files from server
@@ -133,11 +130,10 @@ __backup_files() {
     then
         echo "Download files"
     fi
-    mkdir -p $__BACKUP_DIR/sites
-    $_RSYNC_COMMAND $RSYNC_OPTS $_VERBOSE \
-        $SSH_ALIAS:$REMOTE_DIR \
-        $__BACKUP_DIR/sites \
-        $_OUTPUT_REDIRECTION
+
+    mkdir -p "${__BACKUP_DIR}/sites"
+
+    ${_RSYNC_COMMAND} ${RSYNC_OPTS} ${_VERBOSE} "${SSH_ALIAS}:${REMOTE_DIR}" "${__BACKUP_DIR}/sites"
 }
 
 # Prompt server name from user
