@@ -3,6 +3,7 @@
 TMP_PATH=$1
 MYSQL_USER=$2
 MYSQL_PASSWORD=$3
+VERBOSE=$4
 
 mkdir -p $TMP_PATH
 
@@ -14,10 +15,15 @@ for DB in $DATABASES; do
 		continue
 	fi
 	
-	echo "Dump database: $DB"
+	if [ "-v" == "$VERBOSE" ]
+	then
+		echo "Dump database: $DB"
+	fi
 	
     mysqldump -u $MYSQL_USER -p$MYSQL_PASSWORD $DB | gzip --best > $TMP_PATH/$DB.sql.gz
 	
 done
-
-echo "Dumps created"
+if [ "-v" == "$VERBOSE" ]
+then
+	echo "Dumps created"
+fi
