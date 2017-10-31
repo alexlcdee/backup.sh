@@ -1,6 +1,6 @@
 # Configurable backup script
 
-For backup create `conf/${SERVER_NAME}.sh` file with parameters for server. For example:
+For backup create `conf/${SERVER_NAME}.conf` file with parameters for server. For example:
 
 ```bash
 #!/bin/bash
@@ -25,13 +25,13 @@ $ /path/to/backup.sh
 ```
 and you will be prompted for server number from list.
 
-## Here list of configurable options that might be set in `conf/$_SERVER.sh`
+## Here list of configurable options that might be set in `conf/$_SERVER.conf`
 
 `SSH_ALIAS` — ssh server connection string. E.g.: `"root@host"`
 
 `REMOTE_DIR` — path to files for backup. E.g.: `"/var/www"`
 
-`RSYNC_OPTS` — options for rsync. Defalts to `" -az "`
+`RSYNC_OPTS` — options for rsync. Defalts to `"-az"`
 
 `BACKUP_MYSQL` — whether or not backup MySQL databases. `BACKUP_MYSQL=1` to backup. Defaults to `1`
 
