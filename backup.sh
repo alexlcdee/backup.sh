@@ -8,6 +8,7 @@ _RSYNC_COMMAND="/usr/bin/env rsync"
 _BACKUP_ALL=0
 _VERBOSE=""
 _OUTPUT_REDIRECTION=" &>/dev/null 2>&1"
+_RSYNC_BW_LIMIT=""
 
 # Load config file by server name
 # @param server name
@@ -107,7 +108,7 @@ ENDSCRIPT
         echo "Download databases"
     fi
 
-    ${_RSYNC_COMMAND} "-az" ${_VERBOSE} "${SSH_ALIAS}:${__TMP_PATH}/" "${__BACKUP_DIR}/db"
+    ${_RSYNC_COMMAND} "-az" ${_VERBOSE} ${_RSYNC_BW_LIMIT} "${SSH_ALIAS}:${__TMP_PATH}/" "${__BACKUP_DIR}/db"
 
 
     if [ "-v" == "$_VERBOSE" ]
@@ -133,7 +134,7 @@ __backup_files() {
 
     mkdir -p "${__BACKUP_DIR}/sites"
 
-    ${_RSYNC_COMMAND} ${RSYNC_OPTS} ${_VERBOSE} "${SSH_ALIAS}:${REMOTE_DIR}" "${__BACKUP_DIR}/sites"
+    ${_RSYNC_COMMAND} ${_RSYNC_BW_LIMIT} ${RSYNC_OPTS} ${_VERBOSE} "${SSH_ALIAS}:${REMOTE_DIR}" "${__BACKUP_DIR}/sites"
 }
 
 # Prompt server name from user
@@ -219,12 +220,13 @@ Available options:
  -b, --backup-dir=DIR       Directory to store backups
  -s, --ssh-command=FILE     SSH Client binary path
  -r, --rsync-command=FILE   Rsync binary path
+     --rsync-bwlimit=KBPS   Rsync Bandwidth limit in KB/s
  -v, --verbose              Verbose output
  -h, --help                 Print this help
 "
     exit 0
 }
-
+__OPTS=()
 for __option in "$@"
 do
 case "${__option}" in
@@ -257,39 +259,55 @@ case "${__option}" in
         _VERBOSE="-v"
         shift
     ;;
+	--rsync-bwlimit=*)
+		_RSYNC_BW_LIMIT="--bwlimit=${__option#*=}"
+		shift # past argument=value
+	;;
     *)
+		__OPTS+=("${__option}")
     ;;
 esac
 done
 
 OPTIND=1
-while getopts "h?v?ac:b:s:r:" opt; do
+while getopts "h?v?ac:b:s:r:" opt "${__OPTS[@]}"; do
 case "$opt" in
     a)
         _BACKUP_ALL=1
+		shift
     ;;
     c)  
         _CONF_DIR=$OPTARG
+		shift
+		shift
     ;;
     b)  
         _BACKUP_DIR=$OPTARG
+		shift
+		shift
     ;;
     s)  
         _SSH_COMMAND=$OPTARG
+		shift
+		shift
     ;;
     r)  
         _RSYNC_COMMAND=$OPTARG
+		shift
+		shift
     ;;
     h)
         print_help $0
+		shift
     ;;
     v)
         _VERBOSE="-v"
         _OUTPUT_REDIRECTION=""
+		shift
     ;;
 esac
 done
-shift $((OPTIND-1))
+
 [ "$1" = "--" ] && shift
 
 do_backup $1
